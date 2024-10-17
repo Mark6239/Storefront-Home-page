@@ -33,6 +33,18 @@
       color: #fff;
       text-decoration: underline;
     }
+
+    /* Styles for valid fields */
+    .was-validated .form-control:valid {
+      border-color: #198754;
+    }
+
+    /* JSON display */
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
@@ -60,40 +72,54 @@
 
     <!-- Main Content Area -->
     <main id="main-content" class="col-md-7">
-      <h2>User Signup</h2>
-      <form class="row g-3 needs-validation" novalidate>
+      <h2>Login</h2>
+      <form id="signupForm" class="row g-3 needs-validation" novalidate>
+        <div class="col-sm-12">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" id="email" required>
+          <div class="invalid-feedback">
+            Please provide a valid email!
+          </div>
+        </div>
         <div class="col-sm-12">
           <label for="username" class="form-label">Username:</label>
-          <input type="text" class="form-control" id="username" value="" required>
+          <input type="text" class="form-control" id="username" required>
           <div class="invalid-feedback">
             Please provide a username!
           </div>
         </div>
         <div class="col-sm-12">
-          <label for="email" class="form-label">Email:</label>
-          <input type="text" class="form-control" id="email" value="" required>
+          <label for="confirmUsername" class="form-label">Confirm Username:</label>
+          <input type="text" class="form-control" id="confirmUsername" required>
           <div class="invalid-feedback">
-            Please provide a email!
+            Please confirm your username!
           </div>
         </div>
         <div class="col-sm-12">
           <label for="password" class="form-label">Password:</label>
-          <input type="text" class="form-control" id="password" value="" required>
+          <input type="password" class="form-control" id="password" required>
           <div class="invalid-feedback">
             Please provide a password!
           </div>
         </div>
         <div class="col-sm-12">
           <label for="confirmPassword" class="form-label">Confirm Password:</label>
-          <input type="text" class="form-control" id="confirmPassword" value="" required>
+          <input type="password" class="form-control" id="confirmPassword" required>
           <div class="invalid-feedback">
-            Please provide a confirm password!
+            Please confirm your password!
           </div>
         </div>
         <div class="col-12">
-          <button class="btn btn-primary" type="submit">Submit form</button>
+          <button class="btn btn-primary" type="submit">Login</button>
+          <button class="btn btn-secondary" type="button" id="updateBtn">Update</button>
         </div>
       </form>
+
+      <!-- Section for displaying form data as JSON -->
+      <h4 id="jsonTitle" style="display: none;"></h4>
+      <pre id="jsonData" style="display: none;"></pre>
+
+
     </main>
 
     <!-- Advertisement Section -->
@@ -119,46 +145,55 @@
   (() => {
     'use strict'
 
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    const forms = document.querySelectorAll('.needs-validation')
+    const form = document.getElementById('signupForm');
+    const jsonData = document.getElementById('jsonData');
+    const jsonTitle = document.getElementById('jsonTitle');
 
-    // Loop over them and prevent submission
-    Array.from(forms).forEach(form => {
-      form.addEventListener('submit', event => {
-        const email = form.querySelector('#email');
-        const password = form.querySelector('#password');
-        const confirmPassword = form.querySelector('#confirmPassword');
-        let isValid = true;
+    form.addEventListener('submit', event => {
+      event.preventDefault();
 
-        // Email validation: Check if email contains '@' and '.'
-        if (!email.value.includes('@') || !email.value.includes('.')) {
-          email.setCustomValidity('Please enter a valid email address.');
-          isValid = false;
-        } else {
-          email.setCustomValidity(''); // Clear previous validation message
-        }
-
-        // Password matching validation
-        if (password.value !== confirmPassword.value) {
-          confirmPassword.setCustomValidity('Passwords do not match.');
-          isValid = false;
-        } else {
-          confirmPassword.setCustomValidity(''); // Clear previous validation message
-        }
-
-        if (!form.checkValidity() || !isValid) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
+      // Validate the form
+      if (!form.checkValidity()) {
         form.classList.add('was-validated');
-      }, false)
-    })
-  })()
-</script>
+      } else {
+        // Gather the form data as JSON
+        const formData = {
+          email: document.getElementById('email').value,
+          username: document.getElementById('username').value,
+          confirmUsername: document.getElementById('confirmUsername').value,
+          password: document.getElementById('password').value,
+          confirmPassword: document.getElementById('confirmPassword').value,
+        };
 
+        // Display the JSON data
+        jsonData.textContent = JSON.stringify(formData, null, 2);
+
+        // Show the <pre> element and title
+        jsonData.style.display = 'block';
+        jsonTitle.style.display = 'block';
+      }
+    });
+
+    document.getElementById('updateBtn').addEventListener('click', () => {
+      // Gather the form data
+      const formData = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        confirmUsername: document.getElementById('confirmUsername').value,
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirmPassword').value,
+      };
+
+      // Display the updated data in the pre element
+      jsonData.textContent = JSON.stringify(formData, null, 2);
+
+      // Show the <pre> element and title
+      jsonData.style.display = 'block';
+      jsonTitle.style.display = 'block';
+    });
+  })();
+
+</script>
 </body>
 </html>
-
-
 
